@@ -17,7 +17,7 @@ namespace offsets
 	DWORD isScoped = 0x388E;
 	DWORD vecVel = 0x110;
 	DWORD dwGlow;
-	DWORD dwGlowIdx = 0xA330;
+	DWORD dwGlowIdx = 0xA344;
 	DWORD m_viewPunchAngle = 0x3010;
 	DWORD m_iShotsFired = 0xA2C0;
 	DWORD m_aimPunchAngle = 0x301C;
