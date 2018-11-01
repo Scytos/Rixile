@@ -4,7 +4,7 @@
 namespace offsets
 {
 	DWORD dwClientState;
-	DWORD localPlayer = 0x2FAC;
+	DWORD localPlayer;
 	DWORD iHealth = 0xFC;
 	DWORD teamNum = 0xF0;
 	DWORD entityList;
