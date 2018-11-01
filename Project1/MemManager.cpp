@@ -10,8 +10,8 @@ MemManager::MemManager()
 	try
 	{
 		if (!attachProc("csgo.exe")) { throw 1; }
-		this->cDll = getModule(pID, "client.dll");
-		this->eDll = getModule(pID, "engine_panorama.dll"); //New beta update, don't question
+		this->cDll = getModule(pID, "client_panorama.dll");
+		this->eDll = getModule(pID, "engine.dll"); //New beta update, don't question
 	}
 	catch (...)
 	{
