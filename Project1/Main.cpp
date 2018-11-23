@@ -2,6 +2,9 @@
 #include "LocalPlayer.h"
 #include "Entity.h"
 
+
+////////////////////////////////////////////////////////
+/////////moving the stuff below at a later date////////
 bool bToggle = false;
 bool tToggle = false;
 bool fToggle = false;
@@ -49,6 +52,7 @@ struct glow_t {
 };
 
 int defaultFOV;
+//////////////////////////////////////////////////
 void radar()
 {
 	if (GetAsyncKeyState(VK_F10)) // toggle status
@@ -56,7 +60,7 @@ void radar()
 		radToggle = !radToggle;
 		if (radToggle) std::cout << "Radar ON" << std::endl;
 		else std::cout << "Radar OFF" << std::endl;
-		Sleep(200);
+		SaveCPU(200);
 	}
 
 	if (!radToggle) return; // return if feature isnt toggled
@@ -85,7 +89,7 @@ void chams()
 		cToggle = !cToggle;
 		if (cToggle) std::cout << "Chams ON" << std::endl;
 		else std::cout << "Chams OFF" << std::endl;
-		Sleep(200);
+		SaveCPU(200);
 	}
 	Color obj; // Defining the color struct
 	if (!cToggle) return; // return if feature isnt toggled
@@ -110,66 +114,24 @@ void chams()
 	}
 }
 
-void RCS()
-{
-	if (GetAsyncKeyState(VK_F8))
-	{
-		rToggle = !rToggle;
-		if (rToggle) std::cout << "RCS ON" << std::endl;
-		else std::cout << "RCS OFF" << std::endl;
-		Sleep(200);
-	}
-	if (!rToggle) return;
-
-	DWORD ClientState;
-	DWORD pLocalPlayer;
-	int pShotsFired;
-	Vector CurrentViewAngles;
-	Vector vPunch;
-	Vector NewViewAngles;
-	Vector OldAimPunch;
-	Vector random;
-	OldAimPunch.x = OldAimPunch.y = OldAimPunch.z = 0;
-
-	pLocalPlayer = m->ReadMem<DWORD>(m->cDll.dwBase + offsets::localPlayer);
-	vPunch = m->ReadMem<Vector>(pLocalPlayer + offsets::m_viewPunchAngle);
-	pShotsFired = m->ReadMem<int>(pLocalPlayer + offsets::m_iShotsFired);
-
-	if (pShotsFired > 1)
-	{
-		ClientState = m->ReadMem<DWORD>(m->cDll.dwBase + offsets::dwClientState);
-		CurrentViewAngles = m->ReadMem<Vector>(ClientState + offsets::dwClientState_ViewAngles);
-		
-		NewViewAngles.x = ((CurrentViewAngles.x + OldAimPunch.x) - (vPunch.x * 2.f));
-		NewViewAngles.y = ((CurrentViewAngles.y + OldAimPunch.y) - (vPunch.y * 2.f));
-		NewViewAngles.z = 0;
-
-		SaveCPU(1);
-	}
-
-}
-
 void fovChanger()
 {
-	DWORD dwPla = m->ReadMem<DWORD>(m->cDll.dwBase + offsets::localPlayer);
-
 	if (GetAsyncKeyState(VK_NUMPAD1))
 	{
 		fovToggle = !fovToggle;
 		if (fovToggle) std::cout << "FOV Changer is ON" << std::endl;
 		else std::cout << "FOV Changer is OFF" << std::endl;
-		Sleep(200);
+		SaveCPU(200);
 	}
 	if (!fovToggle)
 	{
 		return;
 	}
 	
-	int isScoped = m->ReadMem<int>(dwPla + offsets::isScoped);
+	int isScoped = m->ReadMem<int>(pLocal->getLocalPlayer() + offsets::isScoped); // checking if localplayer is scoped
 
-	if(isScoped == 0)m->WriteMem<int>(dwPla + offsets::m_iFOVStart-4, 110);
-	else if (isScoped > 0) m->WriteMem<int>(dwPla + offsets::m_iFOVStart - 4, 90);
-
+	if(isScoped == 0)m->WriteMem<int>(pLocal->getLocalPlayer() + offsets::m_iFOVStart-4, 110);
+	else if (isScoped > 0) m->WriteMem<int>(pLocal->getLocalPlayer() + offsets::m_iFOVStart - 4, 90);
 }
 
 void noFlash()
@@ -179,26 +141,25 @@ void noFlash()
 		fToggle = !fToggle;
 		if(fToggle) std::cout << "No Flash is ON" << std::endl;
 		else std::cout << "No Flash is OFF" << std::endl;
-		Sleep(200);
+		SaveCPU(200);
 	}
-	DWORD dwPla = m->ReadMem<DWORD>(m->cDll.dwBase + offsets::localPlayer);
 	if (!fToggle)
 	{
-		m->WriteMem<float>(dwPla + offsets::flashAlpha, 255.f);
-		return;
+		m->WriteMem<float>(pLocal->getLocalPlayer() + offsets::flashAlpha, 255.f); // reseting the glow alpha level in memory that we wrote incase we deactivate the feature
+		return; // return
 	}
-	if (m->ReadMem<float>(dwPla + offsets::flashAlpha) > 0.0f) m->WriteMem<float>(dwPla + offsets::flashAlpha, 0.0f);
+	if (m->ReadMem<float>(pLocal->getLocalPlayer() + offsets::flashAlpha) > 0.0f) m->WriteMem<float>(pLocal->getLocalPlayer() + offsets::flashAlpha, 0.0f); // actual no flash we're setting the flashalpha float value to 0 to achieve "no flash"
 }
 
 void visGlow()
 {
-
+	//This is a shitty way todo a glowesp gonna rework that when I have time
 	if (GetAsyncKeyState(VK_F4))
 	{
 		vgToggle = !vgToggle;
 		if (vgToggle) std::cout << "Visible Glow is ON" << std::endl;
 		else std::cout << "Visible Glow is OFF" << std::endl;
-		Sleep(200);
+		SaveCPU(200);
 	}
 	DWORD gPointer = m->ReadMem<DWORD>(m->cDll.dwBase + offsets::dwGlow);
 	DWORD dwPla = m->ReadMem<DWORD>(m->cDll.dwBase + offsets::localPlayer);
@@ -226,19 +187,19 @@ void visGlow()
 
 
 		m->WriteMem(gPointer + (pEntIdx * 0x38), vGlowObj);
-		Sleep(1);
+		SaveCPU(1);
 	}
 }
 
 void Glow()
 {
-
+	//This is a shitty way todo a glowesp gonna rework that when I have time
 	if (GetAsyncKeyState(VK_F3))
 	{
 		gToggle = !gToggle;
 		if (gToggle) std::cout << "Glow is ON" << std::endl;
 		else std::cout << "Glow is OFF" << std::endl;
-		Sleep(200);
+		SaveCPU(200);
 	}
 	DWORD gPointer = m->ReadMem<DWORD>(m->cDll.dwBase + offsets::dwGlow);
 	DWORD dwPla = m->ReadMem<DWORD>(m->cDll.dwBase + offsets::localPlayer);
@@ -268,7 +229,7 @@ void Glow()
 
 
 		m->WriteMem(gPointer + (pEntIdx * 0x38), glowObj);
-		Sleep(1);
+		SaveCPU(1);
 	}
 	
 }
@@ -283,12 +244,10 @@ void Bhop()
 		Sleep(200);
 	}
 	if (!bToggle) return;
-	DWORD dwPla = m->ReadMem<DWORD>(m->cDll.dwBase + offsets::localPlayer);
-	int flags = m->ReadMem<DWORD>(dwPla + 0x100);
-	if ((GetAsyncKeyState(VK_SPACE) & 0x8000) && (flags & 0x1 == 1))
+	if ((GetAsyncKeyState(VK_SPACE) & 0x8000) && (pLocal->getFlags() & 0x1 == 1)) // gonna update this to support crouching and sneaking bhopping
 	{
 		m->WriteMem<int>(m->cDll.dwBase + offsets::dwForceJump, 6);
-		Sleep(1);
+		SaveCPU(1);
 	}
 }
 
@@ -300,21 +259,20 @@ void Trigger()
 		tToggle = !tToggle;
 		if (tToggle) std::cout << "Triggerbot is ON" << std::endl;
 		else std::cout << "Triggerbot is OFF" << std::endl;
-		Sleep(200);
+		SaveCPU(200);
 	}
 	
 	if (!tToggle) return;
-	DWORD dwPla = m->ReadMem<DWORD>(m->cDll.dwBase + offsets::localPlayer);
-	int lInCross = m->ReadMem<int>(dwPla + offsets::crosshairID) - 1;
-	int lTeam = m->ReadMem<int>(dwPla + offsets::teamNum);
-	int vecVel = m->ReadMem<int>(dwPla + offsets::vecVel);
+	int lInCross = m->ReadMem<int>(pLocal->getLocalPlayer() + offsets::crosshairID) - 1;
+	int lTeam = m->ReadMem<int>(pLocal->getLocalPlayer() + offsets::teamNum);
+	int vecVel = m->ReadMem<int>(pLocal->getLocalPlayer() + offsets::vecVel);
 	DWORD tEntityBase = m->ReadMem<DWORD>(m->cDll.dwBase + offsets::entityList + ((lInCross) * 0x10));
 	int tEntityTeam = m->ReadMem<int>(tEntityBase + offsets::teamNum);
 	bool tDormant = m->ReadMem<bool>(tEntityBase + offsets::bDormant);
 	
 	if ((lInCross > 0 && lInCross <= 64) && (tEntityBase != NULL) && (tEntityTeam != lTeam) && (!tDormant) && (vecVel == 0))
 	{
-		Sleep(25);
+		SaveCPU(25);
 		m->WriteMem<int>(m->cDll.dwBase + offsets::dwForceAttack, 6);
 	}
 
@@ -378,3 +336,44 @@ int main()
 	delete m;
 	return 0;
 }
+
+//uncommented stuff
+
+/*void RCS()
+{
+if (GetAsyncKeyState(VK_F8))
+{
+rToggle = !rToggle;
+if (rToggle) std::cout << "RCS ON" << std::endl;
+else std::cout << "RCS OFF" << std::endl;
+Sleep(200);
+}
+if (!rToggle) return;
+
+DWORD ClientState;
+DWORD pLocalPlayer;
+int pShotsFired;
+Vector CurrentViewAngles;
+Vector vPunch;
+Vector NewViewAngles;
+Vector OldAimPunch;
+Vector random;
+OldAimPunch.x = OldAimPunch.y = OldAimPunch.z = 0;
+
+pLocalPlayer = m->ReadMem<DWORD>(m->cDll.dwBase + offsets::localPlayer);
+vPunch = m->ReadMem<Vector>(pLocalPlayer + offsets::m_viewPunchAngle);
+pShotsFired = m->ReadMem<int>(pLocalPlayer + offsets::m_iShotsFired);
+
+if (pShotsFired > 1)
+{
+ClientState = m->ReadMem<DWORD>(m->cDll.dwBase + offsets::dwClientState);
+CurrentViewAngles = m->ReadMem<Vector>(ClientState + offsets::dwClientState_ViewAngles);
+
+NewViewAngles.x = ((CurrentViewAngles.x + OldAimPunch.x) - (vPunch.x * 2.f));
+NewViewAngles.y = ((CurrentViewAngles.y + OldAimPunch.y) - (vPunch.y * 2.f));
+NewViewAngles.z = 0;
+
+SaveCPU(1);
+}
+
+}*/

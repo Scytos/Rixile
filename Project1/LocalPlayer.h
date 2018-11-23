@@ -8,6 +8,7 @@ public:
 	LocalPlayer();
 	DWORD getLocalPlayer();
 	int getTeamNum();
+	int getFlags();
 
 };
 

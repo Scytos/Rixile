@@ -14,3 +14,8 @@ int LocalPlayer::getTeamNum() // getting the teamnum via our localplayer
 {
 	return m->ReadMem<int>(pLocal->getLocalPlayer() + offsets::teamNum);
 }
+
+int LocalPlayer::getFlags()
+{
+	return m->ReadMem<int>(pLocal->getLocalPlayer() + 0x100);
+}

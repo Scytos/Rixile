@@ -1,0 +1,7 @@
+﻿  Entity.cpp
+  Includes.cpp
+  LocalPlayer.cpp
+  Main.cpp
+c:\users\marvin-pc\desktop\elixir-master\project1\main.cpp(247): warning C4554: '&': check operator precedence for possible error; use parentheses to clarify precedence
+  Generating Code...
+  Project1.vcxproj -> C:\Users\Marvin-PC\Desktop\Elixir-master\Debug\elixir.exe
