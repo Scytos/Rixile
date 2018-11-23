@@ -9,6 +9,8 @@ public:
 	DWORD getLocalPlayer();
 	int getTeamNum();
 	int getFlags();
+	int getMoveType();
+	bool InAir();
 
 };
 

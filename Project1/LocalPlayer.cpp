@@ -19,3 +19,13 @@ int LocalPlayer::getFlags()
 {
 	return m->ReadMem<int>(pLocal->getLocalPlayer() + 0x100);
 }
+
+int LocalPlayer::getMoveType()
+{
+	return m->ReadMem<int>(pLocal->getLocalPlayer() + 0x258);
+}
+
+bool LocalPlayer::InAir() // this shit is hella fucking ghetto normally getflags is a byte
+{
+	return getFlags() == 256 || getFlags() == 258 || getFlags() == 260 || getFlags() == 262;
+}

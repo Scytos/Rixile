@@ -28,9 +28,6 @@ struct Color
 	BYTE a;
 };
 
-Color glowCol;
-Color vglowCol;
-Color chamCol;
 struct glow_t {
 	DWORD dwBase;
 	float r;
@@ -50,9 +47,8 @@ struct glow_t {
 	int m_nSplitScreenSlot;
 	int m_nNextFreeSlot;
 };
-
-int defaultFOV;
 //////////////////////////////////////////////////
+
 void radar()
 {
 	if (GetAsyncKeyState(VK_F10)) // toggle status
@@ -63,6 +59,7 @@ void radar()
 		SaveCPU(200);
 	}
 
+	SaveCPU(1); // Sleeping the Thread for 1 ms to save cpu usage
 	if (!radToggle) return; // return if feature isnt toggled
 
 	for (int i = 1; i < 64; i++)
@@ -78,7 +75,6 @@ void radar()
 		if (pEntTeam == pLocal->getTeamNum()) continue; // continue if the entitys teamnumber equals our localplayers one
 
 		m->WriteMem<int>(dwEntity + offsets::m_bSpotted, true); // writting bspotted to true to achieve a ingameradar
-		SaveCPU(1); // Sleeping the Thread for 1 ms to save cpu usage
 	}
 }
 
@@ -92,6 +88,7 @@ void chams()
 		SaveCPU(200);
 	}
 	Color obj; // Defining the color struct
+	SaveCPU(1);
 	if (!cToggle) return; // return if feature isnt toggled
 	for (int i = 1; i < 64; i++)
 	{
@@ -110,28 +107,7 @@ void chams()
 		obj.a = 255; // alpha here
 
 		m->WriteMem<Color>(dwEntity + 0x70, obj); // writing the object
-		SaveCPU(1);
 	}
-}
-
-void fovChanger()
-{
-	if (GetAsyncKeyState(VK_NUMPAD1))
-	{
-		fovToggle = !fovToggle;
-		if (fovToggle) std::cout << "FOV Changer is ON" << std::endl;
-		else std::cout << "FOV Changer is OFF" << std::endl;
-		SaveCPU(200);
-	}
-	if (!fovToggle)
-	{
-		return;
-	}
-	
-	int isScoped = m->ReadMem<int>(pLocal->getLocalPlayer() + offsets::isScoped); // checking if localplayer is scoped
-
-	if(isScoped == 0)m->WriteMem<int>(pLocal->getLocalPlayer() + offsets::m_iFOVStart-4, 110);
-	else if (isScoped > 0) m->WriteMem<int>(pLocal->getLocalPlayer() + offsets::m_iFOVStart - 4, 90);
 }
 
 void noFlash()
@@ -143,6 +119,7 @@ void noFlash()
 		else std::cout << "No Flash is OFF" << std::endl;
 		SaveCPU(200);
 	}
+	SaveCPU(1);
 	if (!fToggle)
 	{
 		m->WriteMem<float>(pLocal->getLocalPlayer() + offsets::flashAlpha, 255.f); // reseting the glow alpha level in memory that we wrote incase we deactivate the feature
@@ -151,49 +128,8 @@ void noFlash()
 	if (m->ReadMem<float>(pLocal->getLocalPlayer() + offsets::flashAlpha) > 0.0f) m->WriteMem<float>(pLocal->getLocalPlayer() + offsets::flashAlpha, 0.0f); // actual no flash we're setting the flashalpha float value to 0 to achieve "no flash"
 }
 
-void visGlow()
+void Glow() // This is a more proper method of doing a glowesp and a more natural one doing it via entitylist is for sillys
 {
-	//This is a shitty way todo a glowesp gonna rework that when I have time
-	if (GetAsyncKeyState(VK_F4))
-	{
-		vgToggle = !vgToggle;
-		if (vgToggle) std::cout << "Visible Glow is ON" << std::endl;
-		else std::cout << "Visible Glow is OFF" << std::endl;
-		SaveCPU(200);
-	}
-	DWORD gPointer = m->ReadMem<DWORD>(m->cDll.dwBase + offsets::dwGlow);
-	DWORD dwPla = m->ReadMem<DWORD>(m->cDll.dwBase + offsets::localPlayer);
-	int lTeam = m->ReadMem<int>(dwPla + offsets::teamNum);
-	if (!vgToggle) return;
-	for (int i = 1; i < 64; i++)
-	{
-		int pEntity = m->ReadMem<int>(m->cDll.dwBase + offsets::entityList + i * 0x10);
-		int pEntIdx = m->ReadMem<int>(pEntity + offsets::dwGlowIdx);
-
-		int pEntTeam = m->ReadMem<int>(pEntity + offsets::teamNum);
-		bool dormant = m->ReadMem<int>(pEntity + offsets::bDormant);
-
-		if (dormant) continue;
-		if (lTeam == pEntTeam) continue;
-
-		glow_t vGlowObj = m->ReadMem<glow_t>(gPointer + (pEntIdx * 0x38));
-		vGlowObj.r = .176f;
-		vGlowObj.m_flGlowAlpha = 1.f;
-		vGlowObj.g = .015f;
-		vGlowObj.b = .337f;
-		vGlowObj.m_bRenderWhenOccluded = false;
-		vGlowObj.m_bRenderWhenUnoccluded = true;
-		vGlowObj.m_nGlowStyle = 1;
-
-
-		m->WriteMem(gPointer + (pEntIdx * 0x38), vGlowObj);
-		SaveCPU(1);
-	}
-}
-
-void Glow()
-{
-	//This is a shitty way todo a glowesp gonna rework that when I have time
 	if (GetAsyncKeyState(VK_F3))
 	{
 		gToggle = !gToggle;
@@ -201,35 +137,42 @@ void Glow()
 		else std::cout << "Glow is OFF" << std::endl;
 		SaveCPU(200);
 	}
-	DWORD gPointer = m->ReadMem<DWORD>(m->cDll.dwBase + offsets::dwGlow);
-	DWORD dwPla = m->ReadMem<DWORD>(m->cDll.dwBase + offsets::localPlayer);
-	int lTeam = m->ReadMem<int>(dwPla + offsets::teamNum);
+
+	SaveCPU(1);
 	if (!gToggle) return;
-	for (int i = 1; i < 64; i++)
+
+	static DWORD objGlowArray = 0; // emptying glowarray
+	static int objCount = 0; // emptying objcount
+
+	objGlowArray = m->ReadMem<DWORD>(m->cDll.dwBase + offsets::dwGlow); // Getting the dwGlowObject Array
+	objCount = m->ReadMem<DWORD>(m->cDll.dwBase + offsets::dwGlow + 0x4); // Getting the object count its similar to the entity list loop
+
+	if (objGlowArray == 0) return;
+
+	for (int i = 1; i < objCount; i++) // scanning through the object count
 	{
-		int pEntity = m->ReadMem<int>(m->cDll.dwBase + offsets::entityList + i * 0x10);
-		int pEntIdx = m->ReadMem<int>(pEntity + offsets::dwGlowIdx);
+		DWORD mObj = objGlowArray + i * sizeof(glow_t);
+		glow_t vGlowObj = m->ReadMem<glow_t>(mObj);
 
-		int pEntTeam = m->ReadMem<int>(pEntity + offsets::teamNum);
-		bool dormant = m->ReadMem<int>(pEntity + offsets::bDormant);
+		bool bDormant = m->ReadMem<int>(vGlowObj.dwBase + offsets::bDormant); // see if glowobject is dormant
 
-		if (dormant) continue;
-		if (lTeam == pEntTeam) continue;
+		if (bDormant) continue; // if dormant continue
 
-		glow_t glowObj = m->ReadMem<glow_t>(gPointer + (pEntIdx * 0x38));
+		int GlowObjectTeamID = m->ReadMem<int>(vGlowObj.dwBase + offsets::teamNum); // getting glowobject teamnum
 
-		glowObj.r = .176f;
-		glowObj.m_flGlowAlpha = 1.f;
-		glowObj.g = .015f;
-		glowObj.b = .337f;
-		glowObj.m_bRenderWhenOccluded = true;
-		glowObj.m_bRenderWhenUnoccluded = false;
-		glowObj.m_bFullBloomRender = false;
-		glowObj.m_nGlowStyle = 0;
+		if (pLocal->getTeamNum() == GlowObjectTeamID) continue; // if it equals ours continue
+
+		vGlowObj.r = .176f; // setting Red color in glow
+		vGlowObj.m_flGlowAlpha = 1.f; // setting Alpha in glow
+		vGlowObj.g = .015f; // setting green color in glow
+		vGlowObj.b = .337f; // setting blue color in glow
+		vGlowObj.m_bRenderWhenOccluded = true; // writing that to true so glow will show through tha walls
+		vGlowObj.m_bRenderWhenUnoccluded = false;
+		vGlowObj.m_bFullBloomRender = false;
+		vGlowObj.m_nGlowStyle = 0; // Standard glowstyle
 
 
-		m->WriteMem(gPointer + (pEntIdx * 0x38), glowObj);
-		SaveCPU(1);
+		m->WriteMem(mObj, vGlowObj); // writing our object
 	}
 	
 }
@@ -243,11 +186,14 @@ void Bhop()
 		else std::cout << "Bhop is OFF" << std::endl;
 		Sleep(200);
 	}
+	SaveCPU(1);
 	if (!bToggle) return;
-	if ((GetAsyncKeyState(VK_SPACE) & 0x8000) && (pLocal->getFlags() & 0x1 == 1)) // gonna update this to support crouching and sneaking bhopping
+	if (GetAsyncKeyState(VK_SPACE))
 	{
-		m->WriteMem<int>(m->cDll.dwBase + offsets::dwForceJump, 6);
-		SaveCPU(1);
+		if (!pLocal->InAir() && pLocal->getMoveType() != 9) // 9 is the movetypeladder so we can jump of ladders
+		{
+            m->WriteMem<int>(m->cDll.dwBase + offsets::dwForceJump, 6); // write dwforcejump to 6 in memory to jump 4-5 with a sleep would work too but 6 is way more accurate
+		}
 	}
 }
 
@@ -261,14 +207,16 @@ void Trigger()
 		else std::cout << "Triggerbot is OFF" << std::endl;
 		SaveCPU(200);
 	}
+
+	SaveCPU(1);
 	
 	if (!tToggle) return;
 	int lInCross = m->ReadMem<int>(pLocal->getLocalPlayer() + offsets::crosshairID) - 1;
 	int lTeam = m->ReadMem<int>(pLocal->getLocalPlayer() + offsets::teamNum);
 	int vecVel = m->ReadMem<int>(pLocal->getLocalPlayer() + offsets::vecVel);
 	DWORD tEntityBase = m->ReadMem<DWORD>(m->cDll.dwBase + offsets::entityList + ((lInCross) * 0x10));
-	int tEntityTeam = m->ReadMem<int>(tEntityBase + offsets::teamNum);
-	bool tDormant = m->ReadMem<bool>(tEntityBase + offsets::bDormant);
+	int tEntityTeam = pEntity->getEntityTeamNum(tEntityBase);
+	bool tDormant = pEntity->getEntityDormantStatus(tEntityBase);
 	
 	if ((lInCross > 0 && lInCross <= 64) && (tEntityBase != NULL) && (tEntityTeam != lTeam) && (!tDormant) && (vecVel == 0))
 	{
@@ -280,6 +228,9 @@ void Trigger()
 
 void updateOffsets()
 {
+	// A little word to the pattern scanning
+	// The FindPatternArray works like this you add the mask first and then you have another digit after it for the localplayer array its a 19, thats the count of the mask length and after that its the actual signature.
+
 	DWORD LocalPlayerArray = m->FindPatternArray(m->cDll.dwBase, m->cDll.dwSize, "xxx????xx????xxxxx?", 19, 0x8D, 0x34, 0x85, 0x0, 0x0, 0x0, 0x0, 0x89, 0x15, 0x0, 0x0, 0x0, 0x0, 0x8B, 0x41, 0x8, 0x8B, 0x48, 0x0);
 	offsets::localPlayer = m->ReadMem<DWORD>(LocalPlayerArray + 3) + m->ReadMem<BYTE>(LocalPlayerArray + 18) - m->cDll.dwBase;
 	DWORD EntityListArray = m->FindPatternArray(m->cDll.dwBase, m->cDll.dwSize, "x????xx?xxx", 11, 0x5, 0x0, 0x0, 0x0, 0x0, 0xC1, 0xE9, 0x0, 0x39, 0x48, 0x4);
@@ -298,40 +249,34 @@ void updateOffsets()
 
 int main()
 {
-	m = new MemManager();
-	std::cout << "Elixir Free made by nci" << std::endl;
-	std::cout << "Base address: 0x" << std::hex << m->cDll.dwBase << std::endl;
+	std::cout << "Elixir Free made by nci and overhauled by IcePixel" << std::endl;
+	PrintOffsetsConsole("Client Base Address: 0x", m->cDll.dwBase);
+	std::cout << "Pattern Scanning...\n" << std::endl;
 	updateOffsets();
-	std::cout << "Glow Pointer: 0x" << std::hex << offsets::dwGlow << std::endl;
-	std::cout << "Local Player: 0x" << std::hex << offsets::localPlayer << std::endl;
-	std::cout << "Entity List: 0x" << std::hex << offsets::entityList << std::endl;
-	std::cout << "Client State: 0x" << std::hex << offsets::dwClientState << std::endl;
-	std::cout << "ForceJump: 0x" << std::hex << offsets::dwForceJump << std::endl;
-	std::cout << "ForceAttack: 0x" << std::hex << offsets::dwForceAttack << std::endl;
-	std::cout << "CState Viewangles: 0x" << std::hex << offsets::dwClientState_ViewAngles << std::endl;
+	PrintOffsetsConsole("Glow Pointer: 0x", offsets::dwGlow); 
+	PrintOffsetsConsole("Local Player: 0x", offsets::localPlayer);
+	PrintOffsetsConsole("Entity List: 0x", offsets::entityList);
+	PrintOffsetsConsole("Client State: 0x", offsets::dwClientState);
+	PrintOffsetsConsole("ForceJump: 0x", offsets::dwForceJump);
+	PrintOffsetsConsole("ForceAttack: 0x", offsets::dwForceAttack);
+	PrintOffsetsConsole("CState Viewangles: 0x", offsets::dwClientState_ViewAngles);
 
 	std::cout << "\n";
 	std::cout << "Trigger is VK_F2 \n";
 	std::cout << "Glow is VK_F3 \n";
-	std::cout << "Visible Only Glow is VK_F4 \n";
 	std::cout << "No Flash is VK_F5 \n";
 	std::cout << "Bhop is VK_F7 \n";
-	//std::cout << "RCS is VK_F8 \n";
 	std::cout << "Chams is VK_F9 \n";
 	std::cout << "Radar is VK_F10 \n";
-	//std::cout << "FOV Changer is VK_NUMPAD1 \n";
 	std::cout << "\n";
 	while (true)
 	{
 		Trigger();
 		Bhop();
 		Glow();
-		visGlow();
 		chams();
 		radar();
 		noFlash();
-		//RCS();
-		//fovChanger();
 	}
 	delete m;
 	return 0;
@@ -377,3 +322,67 @@ SaveCPU(1);
 }
 
 }*/
+
+
+/*void visGlow()
+{
+	//This is a shitty way todo a glowesp gonna rework that when I have time
+	if (GetAsyncKeyState(VK_F4))
+	{
+		vgToggle = !vgToggle;
+		if (vgToggle) std::cout << "Visible Glow is ON" << std::endl;
+		else std::cout << "Visible Glow is OFF" << std::endl;
+		SaveCPU(200);
+	}
+	DWORD gPointer = m->ReadMem<DWORD>(m->cDll.dwBase + offsets::dwGlow);
+	DWORD dwPla = m->ReadMem<DWORD>(m->cDll.dwBase + offsets::localPlayer);
+	int lTeam = m->ReadMem<int>(dwPla + offsets::teamNum);
+	if (!vgToggle) return;
+	for (int i = 1; i < 64; i++)
+	{
+		int pEntity = m->ReadMem<int>(m->cDll.dwBase + offsets::entityList + i * 0x10);
+		int pEntIdx = m->ReadMem<int>(pEntity + offsets::dwGlowIdx);
+
+		int pEntTeam = m->ReadMem<int>(pEntity + offsets::teamNum);
+		bool dormant = m->ReadMem<int>(pEntity + offsets::bDormant);
+
+		if (dormant) continue;
+		if (lTeam == pEntTeam) continue;
+
+		glow_t vGlowObj = m->ReadMem<glow_t>(gPointer + (pEntIdx * 0x38));
+		vGlowObj.r = .176f;
+		vGlowObj.m_flGlowAlpha = 1.f;
+		vGlowObj.g = .015f;
+		vGlowObj.b = .337f;
+		vGlowObj.m_bRenderWhenOccluded = false;
+		vGlowObj.m_bRenderWhenUnoccluded = true;
+		vGlowObj.m_nGlowStyle = 1;
+
+
+		m->WriteMem(gPointer + (pEntIdx * 0x38), vGlowObj);
+		SaveCPU(1);
+	}
+}*/
+
+/*
+void fovChanger()
+{
+if (GetAsyncKeyState(VK_NUMPAD1))
+{
+fovToggle = !fovToggle;
+if (fovToggle) std::cout << "FOV Changer is ON" << std::endl;
+else std::cout << "FOV Changer is OFF" << std::endl;
+SaveCPU(200);
+}
+SaveCPU(1);
+if (!fovToggle)
+{
+return;
+}
+
+int isScoped = m->ReadMem<int>(pLocal->getLocalPlayer() + offsets::isScoped); // checking if localplayer is scoped
+
+if(isScoped == 0)m->WriteMem<int>(pLocal->getLocalPlayer() + offsets::m_iFOVStart-4, 110);
+else if (isScoped > 0) m->WriteMem<int>(pLocal->getLocalPlayer() + offsets::m_iFOVStart - 4, 90);
+}
+*/

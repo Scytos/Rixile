@@ -10,3 +10,4 @@
 
 extern MemManager *m;
 extern void SaveCPU(int ms);
+extern void PrintOffsetsConsole(const char* text, DWORD Offset);
