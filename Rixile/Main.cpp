@@ -2,6 +2,7 @@
 #include "LocalPlayer.h"
 #include "Entity.h"
 
+// Credits to my sidehoe nci* love ya
 
 ////////////////////////////////////////////////////////
 /////////moving the stuff below at a later date////////
