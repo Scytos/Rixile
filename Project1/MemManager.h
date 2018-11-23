@@ -89,7 +89,7 @@ public:
 	static DWORD FindPattern(DWORD start, DWORD size, const char* sig, const char* mask)
 	{
 		BYTE* data = new BYTE[size];
-		unsigned long bytesRead;
+		size_t bytesRead;
 		if (!ReadProcessMemory(hProc, (LPVOID)start, data, size, &bytesRead))
 		{
 			delete[] sig;

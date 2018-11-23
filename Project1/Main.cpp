@@ -1,9 +1,7 @@
-#include "MemManager.h"
-#include <Windows.h>
-#include <TlHelp32.h>
-#include <iostream>
-#include "offsets.h"
-MemManager* m;
+#include "Includes.h"
+#include "LocalPlayer.h"
+#include "Entity.h"
+
 bool bToggle = false;
 bool tToggle = false;
 bool fToggle = false;
@@ -26,7 +24,6 @@ struct Color
 	BYTE b;
 	BYTE a;
 };
-
 
 Color glowCol;
 Color vglowCol;
@@ -54,59 +51,62 @@ struct glow_t {
 int defaultFOV;
 void radar()
 {
-	if (GetAsyncKeyState(VK_F10))
+	if (GetAsyncKeyState(VK_F10)) // toggle status
 	{
 		radToggle = !radToggle;
 		if (radToggle) std::cout << "Radar ON" << std::endl;
 		else std::cout << "Radar OFF" << std::endl;
 		Sleep(200);
 	}
-	if (!radToggle) return;
-	DWORD dwPla = m->ReadMem<DWORD>(m->cDll.dwBase + offsets::localPlayer);
-	int lTeamNum = m->ReadMem<int>(dwPla + offsets::teamNum);
+
+	if (!radToggle) return; // return if feature isnt toggled
+
 	for (int i = 1; i < 64; i++)
 	{
-		int pEntity = m->ReadMem<int>(m->cDll.dwBase + offsets::entityList + i * 0x10);
-		int pEntTeam = m->ReadMem<int>(pEntity + offsets::teamNum);
-		bool dormant = m->ReadMem<int>(pEntity + offsets::bDormant);
+		int dwEntity = m->ReadMem<int>(m->cDll.dwBase + offsets::entityList + i * 0x10); // looping through 64 entitys in the list
+		bool dormant = pEntity->getEntityDormantStatus(dwEntity); // getting the entitys dormant status and saving it in our boolean
 
-		if (pEntTeam == lTeamNum) continue;
-		if (dormant) continue;
+		if (dormant) continue; // continue if entity is dormant
 
-		m->WriteMem<int>(pEntity + offsets::m_bSpotted, 1);
-		Sleep(1);
+		int pEntTeam = pEntity->getEntityTeamNum(dwEntity); // getting the entityteamnum and saving it in our integer
+
+
+		if (pEntTeam == pLocal->getTeamNum()) continue; // continue if the entitys teamnumber equals our localplayers one
+
+		m->WriteMem<int>(dwEntity + offsets::m_bSpotted, true); // writting bspotted to true to achieve a ingameradar
+		SaveCPU(1); // Sleeping the Thread for 1 ms to save cpu usage
 	}
 }
 
 void chams()
 {
-	if (GetAsyncKeyState(VK_F9))
+	if (GetAsyncKeyState(VK_F9)) // toggle status
 	{
 		cToggle = !cToggle;
 		if (cToggle) std::cout << "Chams ON" << std::endl;
 		else std::cout << "Chams OFF" << std::endl;
 		Sleep(200);
 	}
-	Color obj;
-	if (!cToggle) return;
-	DWORD dwPla = m->ReadMem<DWORD>(m->cDll.dwBase + offsets::localPlayer);
-	int lTeamNum = m->ReadMem<int>(dwPla + offsets::teamNum);
+	Color obj; // Defining the color struct
+	if (!cToggle) return; // return if feature isnt toggled
 	for (int i = 1; i < 64; i++)
 	{
-		int pEntity = m->ReadMem<int>(m->cDll.dwBase + offsets::entityList + i * 0x10);
-		int pEntTeam = m->ReadMem<int>(pEntity + offsets::teamNum);
-		bool dormant = m->ReadMem<int>(pEntity + offsets::bDormant);
+		int dwEntity = m->ReadMem<int>(m->cDll.dwBase + offsets::entityList + i * 0x10); 
+		bool dormant = pEntity->getEntityDormantStatus(dwEntity);
 
-		if (pEntTeam == lTeamNum) continue;
-		if (dormant) continue;
+		if (dormant) continue; 
 
-		obj.r = 45;
-		obj.g = 4;
-		obj.b = 86;
-		obj.a = 255;
+		int pEntTeam = pEntity->getEntityTeamNum(dwEntity);
 
-		m->WriteMem<Color>(pEntity + 0x70, obj);
-		Sleep(1);
+		if (pEntTeam == pLocal->getTeamNum()) continue;
+
+		obj.r = 45; // setting the red color here
+		obj.g = 4; // green here
+		obj.b = 86; // blue here
+		obj.a = 255; // alpha here
+
+		m->WriteMem<Color>(dwEntity + 0x70, obj); // writing the object
+		SaveCPU(1);
 	}
 }
 
@@ -144,26 +144,8 @@ void RCS()
 		NewViewAngles.y = ((CurrentViewAngles.y + OldAimPunch.y) - (vPunch.y * 2.f));
 		NewViewAngles.z = 0;
 
-		//OldAimPunch.x = vPunch.x * 2.f;
-		//OldAimPunch.y = vPunch.y * 2.f;
-		//OldAimPunch.z = 0;
-
-		//m->WriteMem<Vector>(m->eDll.dwBase + offsets::dwClientState + offsets::dwClientState_ViewAngles, NewViewAngles);
-		Sleep(1);
+		SaveCPU(1);
 	}
-
-}
-
-void Aimbot()
-{
-	if (GetAsyncKeyState(VK_F6))
-	{
-		aToggle = !aToggle;
-		if (aToggle) std::cout << "Aimbot ON" << std::endl;
-		else std::cout << "Aimbot OFF" << std::endl;
-		Sleep(200);
-	}
-
 
 }
 

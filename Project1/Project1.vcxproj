@@ -144,10 +144,16 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="Entity.h" />
+    <ClInclude Include="Includes.h" />
+    <ClInclude Include="LocalPlayer.h" />
     <ClInclude Include="MemManager.h" />
     <ClInclude Include="offsets.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Entity.cpp" />
+    <ClCompile Include="Includes.cpp" />
+    <ClCompile Include="LocalPlayer.cpp" />
     <ClCompile Include="Main.cpp" />
     <ClCompile Include="MemManager.cpp" />
     <ClCompile Include="offsets.cpp" />
