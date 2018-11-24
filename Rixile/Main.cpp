@@ -150,7 +150,7 @@ void Glow() // This is a more proper method of doing a glowesp and a more natura
 
 	if (objGlowArray == 0) return;
 
-	for (int i = 1; i < objCount; i++) // scanning through the object count
+	for (int i = 1; i < objCount; i++) // looping through the object count
 	{
 		DWORD mObj = objGlowArray + i * sizeof(glow_t);
 		glow_t vGlowObj = m->ReadMem<glow_t>(mObj);
