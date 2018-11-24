@@ -129,7 +129,7 @@ void noFlash()
 	if (m->ReadMem<float>(pLocal->getLocalPlayer() + offsets::flashAlpha) > 0.0f) m->WriteMem<float>(pLocal->getLocalPlayer() + offsets::flashAlpha, 0.0f); // actual no flash we're setting the flashalpha float value to 0 to achieve "no flash"
 }
 
-void Glow() // This is a more proper method of doing a glowesp and a more natural one doing it via entitylist is for sillys
+void Glow() // This is a more proper method of doing a glowesp and a more natural one, doing it via entitylist is for sillys
 {
 	if (GetAsyncKeyState(VK_F3))
 	{
