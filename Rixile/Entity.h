@@ -9,6 +9,8 @@ public:
 
 	int getEntityTeamNum(int EntityList);
 	bool getEntityDormantStatus(int EntityList);
+	int getClassID(int entity);
+	int getHealth(int entity);
 
 };
 extern Entity *pEntity;

@@ -150,18 +150,16 @@ void Glow() // This is a more proper method of doing a glowesp and a more natura
 
 	if (objGlowArray == 0) return;
 
-	for (int i = 1; i < objCount; i++) // looping through the object count
+	for (int i = 1; i < objCount; i++) // scanning through the object count
 	{
 		DWORD mObj = objGlowArray + i * sizeof(glow_t);
 		glow_t vGlowObj = m->ReadMem<glow_t>(mObj);
 
-		bool bDormant = m->ReadMem<int>(vGlowObj.dwBase + offsets::bDormant); // see if glowobject is dormant
+		if (pEntity->getHealth(vGlowObj.dwBase) <= 0) continue; // fixed glowing non existing CCSPlayer entitys
 
-		if (bDormant) continue; // if dormant continue
+		if (pEntity->getEntityDormantStatus(vGlowObj.dwBase)) continue; // if dormant continue
 
-		int GlowObjectTeamID = m->ReadMem<int>(vGlowObj.dwBase + offsets::teamNum); // getting glowobject teamnum
-
-		if (pLocal->getTeamNum() == GlowObjectTeamID) continue; // if it equals ours continue
+		if (!pEntity->getClassID(vGlowObj.dwBase) == 35) continue; // we break out of the loop if the entity is not a player // CCSPlayer(DT_CSPlayer):110 1709 == 35
 
 		vGlowObj.r = .176f; // setting Red color in glow
 		vGlowObj.m_flGlowAlpha = 1.f; // setting Alpha in glow

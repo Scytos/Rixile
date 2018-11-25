@@ -15,7 +15,7 @@ MemManager::MemManager()
 	}
 	catch (...)
 	{
-		MessageBoxA(NULL, "ERROR", "ERROR", MB_ICONSTOP | MB_OK);
+		MessageBoxA(NULL, "Could not attach to csgo!", "ERROR", MB_ICONSTOP | MB_OK);
 	}
 
 
