@@ -1,6 +1,7 @@
 #include "Includes.h"
 #include "LocalPlayer.h"
 #include "Entity.h"
+#include <map>
 
 // Credits to my sidehoe nci* love ya
 
@@ -13,9 +14,14 @@ bool gToggle = false;
 bool vgToggle = false;
 bool aToggle = false;
 bool rToggle = false;
+bool sToggle = false;
 bool cToggle = false;
 bool radToggle = false;
 bool fovToggle = false;
+
+int paintKit;
+int Quality;
+float wear;
 
 typedef struct {
 	float x, y, z;
@@ -129,7 +135,7 @@ void noFlash()
 	if (m->ReadMem<float>(pLocal->getLocalPlayer() + offsets::flashAlpha) > 0.0f) m->WriteMem<float>(pLocal->getLocalPlayer() + offsets::flashAlpha, 0.0f); // actual no flash we're setting the flashalpha float value to 0 to achieve "no flash"
 }
 
-void Glow() // This is a more proper method of doing a glowesp and a more natural one, doing it via entitylist is for sillys
+void Glow() // This is a more proper method of doing a glowesp and a more natural one doing it via entitylist is for sillys
 {
 	if (GetAsyncKeyState(VK_F3))
 	{
@@ -192,6 +198,45 @@ void Bhop()
 		if (!pLocal->InAir() && pLocal->getMoveType() != 9) // 9 is the movetypeladder so we can jump of ladders
 		{
             m->WriteMem<int>(m->cDll.dwBase + offsets::dwForceJump, 6); // write dwforcejump to 6 in memory to jump 4-5 with a sleep would work too but 6 is way more accurate
+		}
+	}
+}
+
+void SkinChanger() // i fucking hate skinchangers and wont continue this prob I FUCKING HATED TO GET MINE SETUP WITH VARIOUS GHETTO METHODS
+{
+	if (GetAsyncKeyState(VK_F8))
+	{
+		sToggle = !sToggle;
+		if (sToggle) std::cout << "Skinchanger is ON" << std::endl;
+		else std::cout << "Skinchanger is OFF" << std::endl;
+		SaveCPU(200);
+	}
+	if (!sToggle) return;
+	for (int j = 1; j <= 3; j++) // i wanna die for loop scanning 3 times
+	{
+		DWORD WeapEnt = m->ReadMem<DWORD>(pLocal->getLocalPlayer() + offsets::m_hMyWeapons + j * 0x4) & 0xFFF; // weapon entity
+		DWORD weaponBase = m->ReadMem<DWORD>(m->cDll.dwBase + offsets::entityList + (WeapEnt - 1) * 0x10); // weapon id
+		short weaponid = m->ReadMem<short>(weaponBase + offsets::m_iItemDefinitionIndex);
+		DWORD cState = m->ReadMem<DWORD>(m->eDll.dwBase + 0x589B34); // getting clientstate with engine
+		if (weaponid == 0) continue; // continue if id == 0
+		else if (weaponid > 64) continue; // same is above if its greater then 64
+		else
+		{
+			switch (weaponid)
+			{
+			case 1: { paintKit = 22; } // case1 = deagle
+			case 7: { paintKit = 22; } // case 7 = ak47
+			}
+		}
+		int currentPaintKit = m->ReadMem<int>(weaponBase + offsets::m_nFallbackPaintKit); // getting current paintkit
+		if (currentPaintKit != paintKit && currentPaintKit != -1)
+		{
+			m->WriteMem<int>(weaponBase + offsets::m_nFallbackPaintKit, paintKit); // writing our paintkit on our weapon base
+			m->WriteMem<float>(weaponBase + offsets::m_flFallbackWear, wear); // writing our wear on our weaponbase
+			m->WriteMem<int>(weaponBase + offsets::m_iEntityQuality, Quality); // same as above only quality
+			m->WriteMem<int>(weaponBase + offsets::m_iItemIDHigh, -1);
+			if (GetAsyncKeyState(VK_F4)) 
+				m->WriteMem<int>(cState + 0x174, -1); // forceupdate i wanna fk die
 		}
 	}
 }
@@ -268,6 +313,7 @@ int main()
 	std::cout << "Chams is VK_F9 \n";
 	std::cout << "Radar is VK_F10 \n";
 	std::cout << "\n";
+
 	while (true)
 	{
 		Trigger();
@@ -276,6 +322,7 @@ int main()
 		chams();
 		radar();
 		noFlash();
+		//SkinChanger(); uncommented cuz not working properly
 	}
 	delete m;
 	return 0;

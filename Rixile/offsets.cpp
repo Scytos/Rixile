@@ -40,9 +40,12 @@ namespace offsets
 	OFFSET  m_nFallbackSeed = 0x31AC;
 	OFFSET  m_flFallbackWear = 0x31B0;
 	OFFSET  m_nFallbackStatTrak = 0x31B4;
-	OFFSET  m_iEntityQuality = 0x2F9C;
 	OFFSET  m_szCustomName = 0x302C;
 	OFFSET  bSpottedMask = 0x97C;
+	OFFSET  m_iViewModelIndex = 0x3210;
+	OFFSET  m_nModelIndex = 0x254;
+	OFFSET  m_hViewModel = 0x32DC;
+	OFFSET  m_iEntityQuality = 0x2F9C;
 	OFFSET  clientCMD;
 	OFFSET  sendPackets;
 }

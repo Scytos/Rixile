@@ -27,4 +27,16 @@ namespace offsets
 	extern OFFSET m_bSpotted;
 	extern OFFSET maxPlayers;
 	extern OFFSET m_iFOVStart;
+	extern OFFSET m_hMyWeapons;
+	extern OFFSET m_OriginalOwnerXuidLow;
+	extern OFFSET m_OriginalOwnerXuidHigh;
+	extern OFFSET m_iItemDefinitionIndex;
+	extern OFFSET hActiveWeapon;
+	extern OFFSET m_nFallbackPaintKit;
+	extern OFFSET m_flFallbackWear;
+	extern OFFSET m_iItemIDHigh;
+	extern OFFSET m_iViewModelIndex;
+	extern OFFSET m_nModelIndex;
+	extern OFFSET m_hViewModel;
+	extern OFFSET m_iEntityQuality;
 }

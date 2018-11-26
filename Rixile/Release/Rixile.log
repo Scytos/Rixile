@@ -1,0 +1,8 @@
+﻿  Main.cpp
+c:\users\marvin-pc\desktop\rixile\rixile\main.cpp(168): warning C4806: '==': unsafe operation: no value of type 'bool' promoted to type 'int' can equal the given constant
+  Generating code
+  2 of 198 functions ( 1.0%) were compiled, the rest were copied from previous compilation.
+    0 functions were new in current compilation
+    6 functions had inline decision re-evaluated but remain unchanged
+  Finished generating code
+  Rixile.vcxproj -> C:\Users\Marvin-PC\Desktop\Rixile\Release\Rixile.exe

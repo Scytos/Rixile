@@ -1,5 +1,3 @@
-﻿  Entity.cpp
-  Main.cpp
-c:\users\marvin-pc\desktop\rixile\rixile\main.cpp(162): warning C4806: '==': unsafe operation: no value of type 'bool' promoted to type 'int' can equal the given constant
-  Generating Code...
+﻿  Main.cpp
+c:\users\marvin-pc\desktop\rixile\rixile\main.cpp(168): warning C4806: '==': unsafe operation: no value of type 'bool' promoted to type 'int' can equal the given constant
   Rixile.vcxproj -> C:\Users\Marvin-PC\Desktop\Rixile\Debug\Rixile.exe
