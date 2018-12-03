@@ -19,6 +19,7 @@ bool cToggle = false;
 bool radToggle = false;
 bool fovToggle = false;
 
+float flashopacity = 255.f;
 int paintKit;
 int Quality;
 float wear;
@@ -78,7 +79,6 @@ void radar()
 
 		int pEntTeam = pEntity->getEntityTeamNum(dwEntity); // getting the entityteamnum and saving it in our integer
 
-
 		if (pEntTeam == pLocal->getTeamNum()) continue; // continue if the entitys teamnumber equals our localplayers one
 
 		m->WriteMem<int>(dwEntity + offsets::m_bSpotted, true); // writting bspotted to true to achieve a ingameradar
@@ -127,12 +127,20 @@ void noFlash()
 		SaveCPU(200);
 	}
 	SaveCPU(1);
-	if (!fToggle)
+	if (!fToggle && flashopacity == 0.f) // added this flashopacity check so we dont call the writememory down below all the time if the feature isnt enabled
 	{
 		m->WriteMem<float>(pLocal->getLocalPlayer() + offsets::flashAlpha, 255.f); // reseting the glow alpha level in memory that we wrote incase we deactivate the feature
+		flashopacity = 255.f; // setting flashopcatiy to 255.f to prevent further recalling of the writememory
 		return; // return
 	}
-	if (m->ReadMem<float>(pLocal->getLocalPlayer() + offsets::flashAlpha) > 0.0f) m->WriteMem<float>(pLocal->getLocalPlayer() + offsets::flashAlpha, 0.0f); // actual no flash we're setting the flashalpha float value to 0 to achieve "no flash"
+	if (fToggle)
+	{
+		if (m->ReadMem<float>(pLocal->getLocalPlayer() + offsets::flashAlpha) > 0.0f)
+		{
+			m->WriteMem<float>(pLocal->getLocalPlayer() + offsets::flashAlpha, 0.0f); // actual no flash we're setting the flashalpha float value to 0 to achieve "no flash"
+			flashopacity = 0.f; // setting flashopacity to zero for above if statement
+		}
+	}
 }
 
 void Glow() // This is a more proper method of doing a glowesp and a more natural one doing it via entitylist is for sillys
@@ -148,13 +156,13 @@ void Glow() // This is a more proper method of doing a glowesp and a more natura
 	SaveCPU(1);
 	if (!gToggle) return;
 
-	static DWORD objGlowArray = 0; // emptying glowarray
-	static int objCount = 0; // emptying objcount
+	static DWORD objGlowArray = 0; // declare the static dword
+	static int objCount = 0; // declare static integer
 
 	objGlowArray = m->ReadMem<DWORD>(m->cDll.dwBase + offsets::dwGlow); // Getting the dwGlowObject Array
 	objCount = m->ReadMem<DWORD>(m->cDll.dwBase + offsets::dwGlow + 0x4); // Getting the object count its similar to the entity list loop
 
-	if (objGlowArray == 0) return;
+	if (objGlowArray == 0) return; // return when objGlowArray equals 0
 
 	for (int i = 1; i < objCount; i++) // scanning through the object count
 	{
@@ -294,6 +302,8 @@ void updateOffsets()
 int main()
 {
 	std::cout << "Elixir Free made by nci and overhauled by IcePixel" << std::endl;
+	std::cout << "Everyone who sees this copy the thing below and paste it in a reply under the rixile thread ;)" << std::endl;
+	std::cout << "696c6f76656e636969776f756c647375636b6869736469636b616c6c646179" << std::endl;
 	PrintOffsetsConsole("Client Base Address: 0x", m->cDll.dwBase);
 	std::cout << "Pattern Scanning...\n" << std::endl;
 	updateOffsets();
