@@ -18,6 +18,9 @@ int main()
 	PrintOffsetsConsole("ForceAttack: 0x", offsets::dwForceAttack);
 	PrintOffsetsConsole("CState Viewangles: 0x", offsets::dwClientState_ViewAngles);
 
+	//Starting to implement Multithreading
+	CreateThread(0, 0, (LPTHREAD_START_ROUTINE)pMisc->Bhop, 0, 0, 0);
+
 	std::cout << "\n";
 	std::cout << "Trigger is VK_F2 \n";
 	std::cout << "Glow is VK_F3 \n";

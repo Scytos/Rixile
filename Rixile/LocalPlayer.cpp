@@ -17,12 +17,12 @@ int LocalPlayer::getTeamNum() // getting the teamnum via our localplayer
 
 int LocalPlayer::getFlags()
 {
-	return m->ReadMem<int>(pLocal->getLocalPlayer() + 0x100);
+	return m->ReadMem<int>(pLocal->getLocalPlayer() + offsets::m_fFlags);
 }
 
 int LocalPlayer::getMoveType()
 {
-	return m->ReadMem<int>(pLocal->getLocalPlayer() + 0x258);
+	return m->ReadMem<int>(pLocal->getLocalPlayer() + offsets::m_MoveType);
 }
 
 bool LocalPlayer::InAir() // this shit is hella fucking ghetto normally getflags is a byte

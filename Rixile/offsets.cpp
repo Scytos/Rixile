@@ -47,6 +47,9 @@ namespace offsets
 	OFFSET  m_nModelIndex = 0x254;
 	OFFSET  m_hViewModel = 0x32DC;
 	OFFSET  m_iEntityQuality = 0x2F9C;
+	OFFSET  m_iHealth = 0x100;
+	OFFSET  m_fFlags = 0x104;
+	OFFSET  m_MoveType = 0x25C;
 	OFFSET  clientCMD;
 	OFFSET  sendPackets;
 }

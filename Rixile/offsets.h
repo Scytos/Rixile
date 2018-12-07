@@ -40,5 +40,8 @@ namespace offsets
 	extern OFFSET m_nModelIndex;
 	extern OFFSET m_hViewModel;
 	extern OFFSET m_iEntityQuality;
+	extern OFFSET m_iHealth;
+	extern OFFSET m_fFlags;
+	extern OFFSET m_MoveType;
 }
 extern void updateOffsets();

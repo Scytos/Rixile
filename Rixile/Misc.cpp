@@ -37,20 +37,23 @@ void Misc::Radar()
 
 void Misc::Bhop()
 {
-	if (GetAsyncKeyState(VK_F7))
+	while (true)
 	{
-		bToggle = !bToggle;
-		if (bToggle) std::cout << "Bhop is ON" << std::endl;
-		else std::cout << "Bhop is OFF" << std::endl;
-		Sleep(200);
-	}
-	SaveCPU(1);
-	if (!bToggle) return;
-	if (GetAsyncKeyState(VK_SPACE))
-	{
-		if (!pLocal->InAir() && pLocal->getMoveType() != 9) // if we're on ladder or in air dont write dwforcejump to 6
+		if (GetAsyncKeyState(VK_F7))
 		{
-			m->WriteMem<int>(m->cDll.dwBase + offsets::dwForceJump, 6); // write dwforcejump to 6 in memory to jump 4-5 with a sleep would work too but 6 is way more accurate
+			bToggle = !bToggle;
+			if (bToggle) std::cout << "Bhop is ON" << std::endl;
+			else std::cout << "Bhop is OFF" << std::endl;
+			Sleep(200);
+		}
+		SaveCPU(1);
+		if (!bToggle) continue;
+		if (GetAsyncKeyState(VK_SPACE))
+		{
+			if (!pLocal->InAir())
+			{
+				m->WriteMem<int>(m->cDll.dwBase + offsets::dwForceJump, 6); // write dwforcejump to 6 in memory to jump, 4-5 with a sleep would work too but 6 is way more accurate
+			}
 		}
 	}
 }
