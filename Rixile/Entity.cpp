@@ -26,5 +26,5 @@ int Entity::getClassID(int entity) // getting classid for various things example
 
 int Entity::getHealth(int entity) // getting entitys health
 {
-	return  m->ReadMem<int>(entity + 0xFC);
+	return  m->ReadMem<int>(entity + 0x100);
 }

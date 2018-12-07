@@ -317,7 +317,7 @@ int main()
 
 	std::cout << "\n";
 	std::cout << "Trigger is VK_F2 \n";
-	std::cout << "Glow is VK_F3 \n";
+	//std::cout << "Glow is VK_F3 \n";
 	std::cout << "No Flash is VK_F5 \n";
 	std::cout << "Bhop is VK_F7 \n";
 	std::cout << "Chams is VK_F9 \n";
@@ -327,7 +327,7 @@ int main()
 	while (true)
 	{
 		Trigger();
-		Bhop();
+	//	Bhop(); bunnyhop is broken cuz of velocity and jumping mechanic changes
 		Glow();
 		chams();
 		radar();
