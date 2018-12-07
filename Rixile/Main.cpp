@@ -173,7 +173,7 @@ void Glow() // This is a more proper method of doing a glowesp and a more natura
 
 		if (pEntity->getEntityDormantStatus(vGlowObj.dwBase)) continue; // if dormant continue
 
-		if (!pEntity->getClassID(vGlowObj.dwBase) == 35) continue; // we break out of the loop if the entity is not a player // CCSPlayer(DT_CSPlayer):110 1709 == 35
+		if (!pEntity->getClassID(vGlowObj.dwBase) == 38) continue; // Player is 38 now thx nci love u // CCSPlayer(DT_CSPlayer):110 1709 == 38
 
 		vGlowObj.r = .176f; // setting Red color in glow
 		vGlowObj.m_flGlowAlpha = 1.f; // setting Alpha in glow
