@@ -11,3 +11,8 @@ void PrintOffsetsConsole(const char* text, DWORD Offset) // Usage is simply is c
 {
 	std::cout << text << std::hex << Offset << std::endl;
 }
+
+void PrintConsole(const char* text)
+{
+	std::cout << text << std::endl;
+}

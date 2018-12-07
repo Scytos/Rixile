@@ -1,4 +1,5 @@
-#include "offsets.h"
+#include "Offsets.h"
+#include "Includes.h"
 
 namespace offsets
 {
@@ -50,5 +51,25 @@ namespace offsets
 	OFFSET  sendPackets;
 }
 
+void updateOffsets()
+{
+	// A little word to the pattern scanning
+	// The FindPatternArray works like this you add the mask first and then you have another digit after it for the localplayer array its a 19, thats the count of the mask length and after that its the actual signature.
+
+	DWORD LocalPlayerArray = m->FindPatternArray(m->cDll.dwBase, m->cDll.dwSize, "xxx????xx????xxxxx?", 19, 0x8D, 0x34, 0x85, 0x0, 0x0, 0x0, 0x0, 0x89, 0x15, 0x0, 0x0, 0x0, 0x0, 0x8B, 0x41, 0x8, 0x8B, 0x48, 0x0);
+	offsets::localPlayer = m->ReadMem<DWORD>(LocalPlayerArray + 3) + m->ReadMem<BYTE>(LocalPlayerArray + 18) - m->cDll.dwBase;
+	DWORD EntityListArray = m->FindPatternArray(m->cDll.dwBase, m->cDll.dwSize, "x????xx?xxx", 11, 0x5, 0x0, 0x0, 0x0, 0x0, 0xC1, 0xE9, 0x0, 0x39, 0x48, 0x4);
+	offsets::entityList = (m->ReadMem<DWORD>(EntityListArray + 1) + m->ReadMem<BYTE>(EntityListArray + 7)) - m->cDll.dwBase;
+	DWORD ForceJumpArray = m->FindPatternArray(m->cDll.dwBase, m->cDll.dwSize, "xx????xxxxxxx", 13, 0x8B, 0x0D, 0x00, 0x00, 0x00, 0x00, 0x8B, 0xD6, 0x8B, 0xC1, 0x83, 0xCA, 0x02);
+	offsets::dwForceJump = m->ReadMem<DWORD>(ForceJumpArray + 2) - m->cDll.dwBase;
+	DWORD ForceAttackArray = m->FindPatternArray(m->cDll.dwBase, m->cDll.dwSize, "xx????xx????xxxxxxx", 19, 0x89, 0x0D, 0x0, 0x0, 0x0, 0x0, 0x8B, 0x0D, 0x0, 0x0, 0x0, 0x0, 0x8B, 0xF2, 0x8B, 0xC1, 0x83, 0xCE, 0x04);
+	offsets::dwForceAttack = m->ReadMem<DWORD>(ForceAttackArray + 2) - m->cDll.dwBase;
+	DWORD ClientStateArray = m->FindPatternArray(m->eDll.dwBase, m->eDll.dwSize, "x????xxxxxxxxxx", 15, 0xA1, 0x0, 0x0, 0x0, 0x0, 0x33, 0xD2, 0x6A, 0x0, 0x6A, 0x0, 0x33, 0xC9, 0x89, 0xB0);
+	offsets::dwClientState = m->ReadMem<DWORD>(ClientStateArray + 1) - m->eDll.dwBase;
+	DWORD GlowObjectArray = m->FindPatternArray(m->cDll.dwBase, m->cDll.dwSize, "x????xxxx", 9, 0xA1, 0x0, 0x0, 0x0, 0x0, 0xA8, 0x01, 0x75, 0x4B);
+	offsets::dwGlow = m->ReadMem<DWORD>(GlowObjectArray + 1) + 0x4 - m->cDll.dwBase;
+	DWORD ClientState_ViewAnglesArray = m->FindPatternArray(m->eDll.dwBase, m->eDll.dwSize, "xxx????xxxxx", 13, 0xF3, 0x0F, 0x11, 0x80, 0x0, 0x0, 0x0, 0x0, 0xD9, 0x46, 0x04, 0xD9, 0x05);
+	offsets::dwClientState_ViewAngles = m->ReadMem<DWORD>(ClientState_ViewAnglesArray + 4);
+}
 
 

@@ -2,6 +2,7 @@
 #include <Windows.h>
 
 typedef unsigned long OFFSET;
+
 namespace offsets
 {
 	extern OFFSET dwClientState;
@@ -40,3 +41,4 @@ namespace offsets
 	extern OFFSET m_hViewModel;
 	extern OFFSET m_iEntityQuality;
 }
+extern void updateOffsets();

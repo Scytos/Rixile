@@ -145,18 +145,25 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="Entity.h" />
+    <ClInclude Include="Misc.h" />
+    <ClInclude Include="Offsets.h" />
+    <ClInclude Include="Visuals.h" />
     <ClInclude Include="Includes.h" />
     <ClInclude Include="LocalPlayer.h" />
     <ClInclude Include="MemManager.h" />
-    <ClInclude Include="offsets.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Entity.cpp" />
+    <ClCompile Include="Misc.cpp" />
+    <ClCompile Include="Offsets.cpp" />
+    <ClCompile Include="Visuals.cpp" />
     <ClCompile Include="Includes.cpp" />
     <ClCompile Include="LocalPlayer.cpp" />
     <ClCompile Include="Main.cpp" />
     <ClCompile Include="MemManager.cpp" />
-    <ClCompile Include="offsets.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="Uncommented Stuff.txt" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
