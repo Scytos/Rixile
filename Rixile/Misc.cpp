@@ -73,15 +73,17 @@ void Misc::Trigger()
 	if (!tToggle) return;
 	int lInCross = m->ReadMem<int>(pLocal->getLocalPlayer() + offsets::crosshairID) - 1;
 	int lTeam = m->ReadMem<int>(pLocal->getLocalPlayer() + offsets::teamNum);
-	int vecVel = m->ReadMem<int>(pLocal->getLocalPlayer() + offsets::vecVel);
 	DWORD tEntityBase = m->ReadMem<DWORD>(m->cDll.dwBase + offsets::entityList + ((lInCross) * 0x10));
 	int tEntityTeam = pEntity->getEntityTeamNum(tEntityBase);
 	bool tDormant = pEntity->getEntityDormantStatus(tEntityBase);
 
-	if ((lInCross > 0 && lInCross <= 64) && (tEntityBase != NULL) && (tEntityTeam != lTeam) && (!tDormant) && (vecVel == 0))
+	if (GetAsyncKeyState(VK_CONTROL)) // change vk_control to desired key
 	{
-		SaveCPU(25);
-		m->WriteMem<int>(m->cDll.dwBase + offsets::dwForceAttack, 6);
+		if ((lInCross > 0 && lInCross <= 64) && (tEntityBase != NULL) && (tEntityTeam != lTeam) && (!tDormant)) // changed it for retards that cant even delete some stuff
+		{
+			SaveCPU(25);
+			m->WriteMem<int>(m->cDll.dwBase + offsets::dwForceAttack, 6);
+		}
 	}
 
 }
