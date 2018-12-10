@@ -41,7 +41,8 @@ namespace offsets
 	OFFSET  m_nFallbackSeed = 0x31BC;
 	OFFSET  m_flFallbackWear = 0x31C0;
 	OFFSET  m_nFallbackStatTrak = 0x31C4;
-	OFFSET  m_szCustomName = 0x303C;
+	//OFFSET  m_szCustomName = 0x303C;
+	std::string m_szCustomName = "painkit.m_szCustomName"; // is a string now found it after reversing
 	OFFSET  bSpottedMask = 0x980;
 	OFFSET  m_iViewModelIndex = 0x3210;
 	OFFSET  m_nModelIndex = 0x254;

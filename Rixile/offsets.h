@@ -1,5 +1,6 @@
 #pragma once
 #include <Windows.h>
+#include <iostream>
 
 typedef unsigned long OFFSET;
 
@@ -43,5 +44,6 @@ namespace offsets
 	extern OFFSET m_iHealth;
 	extern OFFSET m_fFlags;
 	extern OFFSET m_MoveType;
+	extern std::string m_szCustomName;
 }
 extern void updateOffsets();
