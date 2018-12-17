@@ -1,14 +1,8 @@
-﻿  Entity.cpp
-  Misc.cpp
-  Offsets.cpp
-  Visuals.cpp
-d:\csgo stuff\rixile-master\rixile\visuals.cpp(40): warning C4806: '==': unsafe operation: no value of type 'bool' promoted to type 'int' can equal the given constant
-  Includes.cpp
-  LocalPlayer.cpp
+﻿  LocalPlayer.cpp
   Main.cpp
   Generating code
-  197 of 200 functions (98.5%) were compiled, the rest were copied from previous compilation.
-    8 functions were new in current compilation
+  0 of 201 functions ( 0.0%) were compiled, the rest were copied from previous compilation.
+    0 functions were new in current compilation
     0 functions had inline decision re-evaluated but remain unchanged
   Finished generating code
   Rixile.vcxproj -> D:\CSGO Stuff\Rixile-master\Release\Rixile.exe

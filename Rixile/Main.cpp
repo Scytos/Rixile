@@ -22,6 +22,7 @@ int main()
 	CreateThread(0, 0, (LPTHREAD_START_ROUTINE)pMisc->Bhop, 0, 0, 0);
 
 	std::cout << "\n";
+	std::cout << "ForceFullUpdate is VK_F1 \n";
 	std::cout << "Trigger is VK_F2 \n";
 	std::cout << "Glow is VK_F3 \n";
 	std::cout << "No Flash is VK_F5 \n";
@@ -36,6 +37,8 @@ int main()
 		pVisuals->Chams();
 		pMisc->Radar();
 		pVisuals->noFlash();
+		if (GetAsyncKeyState(VK_F1)) // press f1 to get rid of chams after team switch
+			pLocal->ForceFullUpdate();
 	}
 	delete m;
 	return 0;

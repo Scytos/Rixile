@@ -11,6 +11,7 @@ public:
 	int getFlags();
 	int getMoveType();
 	bool InAir();
+	void ForceFullUpdate();
 
 };
 

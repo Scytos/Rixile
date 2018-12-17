@@ -29,3 +29,9 @@ bool LocalPlayer::InAir() // this shit is hella fucking ghetto normally getflags
 {
 	return getFlags() == 256 || getFlags() == 258 || getFlags() == 260 || getFlags() == 262;
 }
+
+void LocalPlayer::ForceFullUpdate() //using this to remove chams
+{
+	DWORD cState = m->ReadMem<DWORD>(m->eDll.dwBase + offsets::dwClientState);
+	m->WriteMem<int>(cState + 0x174, -1);
+}
