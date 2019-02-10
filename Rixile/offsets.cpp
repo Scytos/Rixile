@@ -5,10 +5,9 @@ namespace offsets
 {
 	OFFSET  dwClientState;
 	OFFSET  localPlayer;
-	OFFSET  iHealth = 0x100;
 	OFFSET  teamNum = 0xF4;
 	OFFSET  entityList;
-	OFFSET  crosshairID = 0xB390;
+	OFFSET  crosshairID = 0xB394;
 	OFFSET  bDormant = 0xED;
 	OFFSET  dwForceAttack;
 	OFFSET  dwForceJump;
@@ -24,7 +23,7 @@ namespace offsets
 	OFFSET  m_vecViewOffset = 0x108;
 	OFFSET  dwClientState_ViewAngles = 0x4D10;
 	OFFSET  m_bSpotted = 0x93D;
-	OFFSET  maxPlayers = 0x310;
+	OFFSET  maxPlayers = 0x388;
 	OFFSET  m_iFOVStart = 0x31E8;
 	OFFSET  hActiveWeapon = 0x2EF8;
 	OFFSET  m_iItemDefinitionIndex = 0x2FAA;

@@ -33,6 +33,9 @@ void Visuals::GlowESP()
 		DWORD mObj = objGlowArray + i * sizeof(glow_t);
 		glow_t vGlowObj = m->ReadMem<glow_t>(mObj);
 
+		if (!vGlowObj.dwBase)
+			continue;
+
 		if (pEntity->getHealth(vGlowObj.dwBase) <= 0) continue; // fixed glowing non existing CCSPlayer entitys
 
 		if (pEntity->getEntityDormantStatus(vGlowObj.dwBase)) continue; // if dormant continue
